@@ -59,9 +59,9 @@ startgame = () =>
 
 getnewquestion = () =>
 {
-    if(availablequestions.length === 0 || questioncounter > max_questions)
+    if(availablequestions.length === 0 || questioncounter === max_questions)
     {
-        localStorage.setItem('mostrecentscore' , score);
+       localStorage.setItem('mostrecentscore' , score);
         return window.location.assign('end.html');
     }
     
@@ -84,32 +84,34 @@ getnewquestion = () =>
     
     acceptinganswers=true
 
+    choices.forEach(choice=>{
+        choice.addEventListener('click' , e=>{
+           if(! acceptinganswers)return
+   
+           acceptinganswers = false
+           const selectedchoices = e.target
+           const selectedanswers  = selectedchoices.dataset['number']
+   
+           let classtoapplay = selectedanswers === currentquestion.answer ? 'correct' : 'incorrect'
+   
+           if(classtoapplay === 'correct')
+           {
+               incrementScore(score_points)
+           }
+   
+           selectedchoices.parentElement.classList.add(classtoapplay)
+   
+           setTimeout(() => {
+               selectedchoices.parentElement.classList.remove(classtoapplay)
+               getnewquestion()
+           },1000)
+   
+        })   
+   })
+
 }
 
-choices.forEach(choice=>{
-     choice.addEventListener('click' , e=>{
-        if(! acceptinganswers)return
 
-        acceptinganswers = false
-        const selectedchoices = e.target
-        const selectedanswers  = selectedchoices.dataset['number']
-
-        let classtoapplay = selectedanswers === currentquestion.answer ? 'correct' : 'incorrect'
-
-        if(classtoapplay === 'correct')
-        {
-            incrementScore(score_points)
-        }
-
-        selectedchoices.parentElement.classList.add(classtoapplay)
-
-        setTimeout(() => {
-            selectedchoices.parentElement.classList.remove(classtoapplay)
-            getnewquestion()
-        },1000)
-
-     })   
-})
 
 incrementScore = num =>{
     score += num
